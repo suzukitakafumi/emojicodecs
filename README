@@ -1,1 +1,39 @@
-Codecs for Emoji
+Codecs for mobile japanese mobile phones
+
+Supported Encodings:
+    X-Shift_JIS-DoCoMo
+    X-Shift_JIS-KDDI
+    X-Shift_JIS-SoftBank
+    X-UTF-8-DoCoMo
+    X-UTF-8-KDDI
+    X-UTF-8-SoftBank
+
+Example:
+>> import emojicodecs
+>>> fine = "\xf8\x9f".decode('x_sjis_docomo') # ドコモのShift_JISでエンコードされた絵文字 "晴れ"
+>>> fine
+u'\U000fe000' # Googleが利用しているPUAにマッピング
+>>> fine.encode('x_sjis_softbank')
+'\xf9\x8b' # "太陽" KDDI絵文字のShift_JISにエンコードしたもの
+>>> fine.encode('x_sjis_kddi')
+'\xf6`'    # "太陽" KDDI絵文字のShift_JISにエンコードしたもの
+
+    
+    fine = "\xf8\x9f".decode('x_sjis_docomo') # => u'\U000fe000' 
+    fine.encode('x_utf8_docomo') # '\xee\x98\xbe' ("晴れ" ドコモ絵文字のUnicodeをUTF-8エンコードしたもの)
+    fine.encode('x_utf8_kddi')   # '\xf660'       ()
+    
+# フォールバック
+>>> kame = '\xf3\x47'.decode('x_sjis_kddi')
+>>> kame
+u'\U000fe1dc'
+>>> kame.encode('x_utf8_docomo')
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "emojicodecs\encodings\__init__.py", line 28, in encode
+  File "emojicodecs\encodings\__init__.py", line 27, in repl
+UnicodeEncodeError: 'x_utf8_docomo' codec can't encode characters in position 0-1: undefined conversion emoji
+>>> kame.encode('x_utf8_docomo', 'fallback') # text fallback
+'[\xe3\x82\xab\xe3\x83\xa1]'
+>>> kame.encode('x_utf8_docomo', 'fallback_gmail') # gmail fallback (Unofficial API)
+'<img src="http://mail.google.com/mail/e/1DC" alt="TURTLE" />'
